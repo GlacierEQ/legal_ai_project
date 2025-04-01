@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:14
+    container_name: legal_ai_postgres
+    environment:
+      POSTGRES_USER: legal_ai_user
+      POSTGRES_PASSWORD: legal_ai_password
+      POSTGRES_DB: legal_assistant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - legal_ai_network
+
+  # Service API Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: legal_ai_api
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://legal_ai_user:legal_ai_password@postgres:5432/legal_assistant
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-votre_cle_secrete_jwt}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-votre_api_key_anthropic}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-votre_api_key_openai}
+      - PINECONE_API_KEY=${PINECONE_API_KEY:-votre_api_key_pinecone}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT:-gcp-starter}
+      - STRIPE_API_KEY=${STRIPE_API_KEY:-votre_cle_api_stripe}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-votre_cle_secrete_webhook_stripe}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+      - ./scripts:/scripts
+      - ./data:/data
+    restart: unless-stopped
+    networks:
+      - legal_ai_network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: legal_ai_frontend
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    restart: unless-stopped
+    networks:
+      - legal_ai_network
+
+  # Service de collecte de données (exécution ponctuelle)
+  data_collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: legal_ai_data_collector
+    depends_on:
+      - postgres
+    environment:
+      - LEGIFRANCE_API_KEY=${LEGIFRANCE_API_KEY:-votre_api_key_legifrance}
+      - LEGIFRANCE_API_SECRET=${LEGIFRANCE_API_SECRET:-votre_api_secret_legifrance}
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - legal_ai_network
+    command: python /scripts/legifrance_collector.py
+    profiles:
+      - data_collection
+
+  # Service d'indexation vectorielle (exécution ponctuelle)
+  vector_indexer:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: legal_ai_vector_indexer
+    depends_on:
+      - data_collector
+    environment:
+      - PINECONE_API_KEY=${PINECONE_API_KEY:-votre_api_key_pinecone}
+      - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT:-gcp-starter}
+      - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME:-legal-assistant}
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+    networks:
+      - legal_ai_network
+    command: python /scripts/vector_indexer.py
+    profiles:
+      - data_collection
+
+networks:
+  legal_ai_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
