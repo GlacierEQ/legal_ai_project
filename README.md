@@ -33,6 +33,59 @@ An ordinary legal-information prototype can hide its assumptions in a notebook o
 
 No OpenAPI, protobuf, or stable public external API is declared in the root README material inspected here. Machine clients should follow the checked-in application and deployment documentation instead of assuming a contract.
 
+### Machine–Mesh Protocol Manifest
+
+<!-- glacier-eq-protocol:start -->
+```yaml
+schema: glacier-eq.readme.machine-mesh/v1
+repository:
+  id: "GlacierEQ/legal_ai_project"
+  url: "https://github.com/GlacierEQ/legal_ai_project"
+  readme_contract: four-layer-v1
+machine:
+  repository_kind: "application"
+  public_api: none-declared-at-root
+  protocol_files: []
+  entrypoints:
+    - kind: "service-composition"
+      path: "docker-compose.yml"
+      policy: "inspect-before-use"
+    - kind: "dependency-declaration"
+      path: "requirements.txt"
+      policy: "inspect-before-use"
+    - kind: "application-area"
+      path: "app/"
+      policy: "inspect-before-use"
+    - kind: "frontend-area"
+      path: "frontend/"
+      policy: "inspect-before-use"
+    - kind: "test-area"
+      path: "tests/"
+      policy: "run-before-reliance"
+    - kind: "configuration-template"
+      path: ".env.example"
+      policy: "template-only"
+mesh:
+  branch: "legal-details"
+  subcategory: "legal-ai-application-workflow"
+  routing:
+    - relation: estate-map
+      target: "GlacierEQ/monolith"
+      url: "https://github.com/GlacierEQ/monolith"
+    - relation: legal-engineering-gateway
+      target: "GlacierEQ/legal-powerhouse"
+      url: "https://github.com/GlacierEQ/legal-powerhouse"
+    - relation: legal-data-routing-surface
+      target: "GlacierEQ/DOCKETS"
+      url: "https://github.com/GlacierEQ/DOCKETS"
+    - relation: case-model-routing-surface
+      target: "GlacierEQ/SUPERLUMINAL_CASE_MATRIX"
+      url: "https://github.com/GlacierEQ/SUPERLUMINAL_CASE_MATRIX"
+  boundaries:
+    - "routing-does-not-transfer-source-evidence-code-deployment-or-lifecycle-authority"
+    - "derived-output-remains-traceable-to-its-inputs"
+```
+<!-- glacier-eq-protocol:end -->
 ## Layer 4 — Mesh: family and integration map
 
 **Monolith route:** [GlacierEQ/monolith](https://github.com/GlacierEQ/monolith) maps the repository estate and routes discovery across domains.
