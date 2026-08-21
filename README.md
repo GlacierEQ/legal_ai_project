@@ -6,6 +6,18 @@ Legal AI Project is an application workspace for a legal-AI system with frontend
 
 It matters because legal-AI work is most useful when product experience, system design, environment configuration, and testable implementation are available in the same repository. The project is a platform for building and evaluating those capabilities; it does not itself establish legal advice, a legal conclusion, or the truth of any case record.
 
+### Human impact and relationship
+
+**Who this is designed to meet:** user, developer, technical reviewer.
+
+**Decision it supports:** understand what the application can support and how to evaluate it.
+
+**Human impact:** It helps readers separate a useful legal-information workflow from a claim of legal advice or source-record truth.
+
+**Relationship stance:** Lead with the user problem, then expose architecture, configuration, tests, and limits so readers retain agency over how they use the system.
+
+This is a presentation-calibration commitment, not a claim to predict a person, diagnose motive, exploit vulnerability, or change the underlying evidence. The reader remains free to inspect the source material, stop at the level of detail they need, and disagree with any derived interpretation.
+
 ## Layer 2 — Master: architecture and distinctive method
 
 The repository combines application code, a frontend, Docker Compose configuration, environment templates, specifications, scripts, tests, and architecture/project documentation. The distinctive method is not that it uses AI in isolation. It gives the system surrounding structure: deployment, documentation, testing, and configuration sit beside the application layers so the implementation can be understood as a complete technical workflow.
@@ -84,6 +96,36 @@ mesh:
   boundaries:
     - "routing-does-not-transfer-source-evidence-code-deployment-or-lifecycle-authority"
     - "derived-output-remains-traceable-to-its-inputs"
+human_calibration:
+  provider:
+    id: "stone-psysoc-x"
+    repository: "GlacierEQ/AKOS"
+    manifest_path: "stones/psysoc-x/stone.json"
+    engine_path: "infinity_stones/psysoc_x.py"
+    version: "0.1.0"
+    verification_scope: "repository-local TEST"
+  explicit_context:
+    intended_audiences:
+      - "user"
+      - "developer"
+      - "technical reviewer"
+    decision: "understand what the application can support and how to evaluate it"
+    privacy_state: "context-dependent"
+  outputs:
+    - "attention-strategy"
+    - "tone"
+    - "density"
+    - "logic-order"
+    - "skepticism-response"
+    - "memory-anchor"
+    - "dignity-controls"
+    - "warnings"
+  boundaries:
+    - "presentation-calibration-only"
+    - "no-diagnosis-hidden-trait-inference-or-vulnerability-exploitation"
+    - "no-evidence-promotion-or-fact-determination"
+    - "preserve-reader-agency-and-material-uncertainty"
+    - "high-stakes-or-sensitive-use-requires-human-review"
 ```
 <!-- glacier-eq-protocol:end -->
 ## Layer 4 — Mesh: family and integration map
